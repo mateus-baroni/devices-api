@@ -1,3 +1,6 @@
+using Devices.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Controllers
@@ -6,6 +9,12 @@ builder.Services.AddControllers();
 // Swagger / OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<DevicesDbContext>(options =>
+{
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DevicesDb"));
+});
 
 var app = builder.Build();
 
