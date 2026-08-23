@@ -1,3 +1,5 @@
+using Devices.Domain.Exceptions;
+
 namespace Devices.Domain;
 
 public class Device
@@ -32,6 +34,34 @@ public class Device
     public DeviceState State { get; private set; }
 
     public DateTime CreatedAt { get; private set; }
-    
+
     public DateTime UpdatedAt { get; private set; }
+
+    public void UpdateDetails(
+        string name,
+        string brand,
+        DeviceState state)
+    {
+        if (State == DeviceState.InUse &&
+            (Name != name || Brand != brand))
+        {
+            throw new DeviceUpdateConflictException(
+                "Name and brand cannot be updated while the device is in use.");
+        }
+
+        var changed =
+            Name != name ||
+            Brand != brand ||
+            State != state;
+
+        if (!changed)
+        {
+            return;
+        }
+
+        Name = name;
+        Brand = brand;
+        State = state;
+        UpdatedAt = DateTime.UtcNow;
+    }
 }

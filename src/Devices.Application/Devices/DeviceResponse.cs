@@ -7,4 +7,5 @@ public sealed record DeviceResponse(
     string Name,
     string Brand,
     DeviceState State,
-    DateTime CreatedAt);
+    DateTime CreatedAt,
+    DateTime UpdatedAt);

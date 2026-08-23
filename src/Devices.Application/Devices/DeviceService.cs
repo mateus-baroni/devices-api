@@ -36,7 +36,8 @@ public class DeviceService
                 d.Name,
                 d.Brand,
                 d.State,
-                d.CreatedAt))
+                d.CreatedAt,
+                d.UpdatedAt))
             .FirstOrDefaultAsync();
     }
 
@@ -62,7 +63,31 @@ public class DeviceService
                 d.Name,
                 d.Brand,
                 d.State,
-                d.CreatedAt))
+                d.CreatedAt,
+                d.UpdatedAt))
             .ToListAsync();
     }
+
+    public async Task<bool> UpdateAsync(
+        Guid id,
+        UpdateDeviceRequest request)
+    {
+        var device = await _dbContext.Devices
+            .FirstOrDefaultAsync(d => d.Id == id);
+
+        if (device is null)
+        {
+            return false;
+        }
+
+        device.UpdateDetails(
+            request.Name,
+            request.Brand,
+            request.State);
+
+        await _dbContext.SaveChangesAsync();
+
+        return true;
+    }
+    
 }

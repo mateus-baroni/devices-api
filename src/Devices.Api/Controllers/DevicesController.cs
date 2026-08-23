@@ -1,5 +1,6 @@
 using Devices.Application.Devices;
 using Devices.Domain;
+using Devices.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Devices.Api.Controllers;
@@ -48,5 +49,30 @@ public class DevicesController : ControllerBase
         var devices = await _deviceService.GetDevicesAsync(brand, state);
 
         return Ok(devices);
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(
+        Guid id,
+        UpdateDeviceRequest request)
+    {
+        try
+        {
+            var updated = await _deviceService.UpdateAsync(id, request);
+
+            if (!updated)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+        catch (DeviceUpdateConflictException ex)
+        {
+            return Conflict(new
+            {
+                message = ex.Message
+            });
+        }
     }
 }
