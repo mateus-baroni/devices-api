@@ -1,4 +1,5 @@
 using Devices.Application.Devices;
+using Devices.Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Devices.Api.Controllers;
@@ -40,9 +41,11 @@ public class DevicesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetDevices(
+        [FromQuery] string? brand,
+        [FromQuery] DeviceState? state)
     {
-        var devices = await _deviceService.GetAllAsync();
+        var devices = await _deviceService.GetDevicesAsync(brand, state);
 
         return Ok(devices);
     }

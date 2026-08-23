@@ -40,9 +40,23 @@ public class DeviceService
             .FirstOrDefaultAsync();
     }
 
-    public async Task<IReadOnlyList<DeviceResponse>> GetAllAsync()
+    public async Task<IReadOnlyList<DeviceResponse>> GetDevicesAsync(
+        string? brand,
+        DeviceState? state)
     {
-        return await _dbContext.Devices
+        var query = _dbContext.Devices.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(brand))
+        {
+            query = query.Where(d => d.Brand == brand);
+        }
+
+        if (state.HasValue)
+        {
+            query = query.Where(d => d.State == state.Value);
+        }
+
+        return await query
             .Select(d => new DeviceResponse(
                 d.Id,
                 d.Name,
