@@ -30,6 +30,7 @@ public class DeviceService
     public async Task<DeviceResponse?> GetByIdAsync(Guid id)
     {
         return await _dbContext.Devices
+            .AsNoTracking()
             .Where(d => d.Id == id && d.DeletedAt == null)
             .Select(d => new DeviceResponse(
                 d.Id,
@@ -46,6 +47,7 @@ public class DeviceService
         DeviceState? state)
     {
         var query = _dbContext.Devices
+            .AsNoTracking()
             .Where(d => d.DeletedAt == null)
             .AsQueryable();
 
