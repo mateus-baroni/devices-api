@@ -1,5 +1,6 @@
 using Devices.Domain;
 using Devices.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace Devices.Application.Devices;
 
@@ -24,5 +25,18 @@ public class DeviceService
         await _dbContext.SaveChangesAsync();
 
         return device.Id;
+    }
+
+    public async Task<DeviceResponse?> GetByIdAsync(Guid id)
+    {
+        return await _dbContext.Devices
+            .Where(d => d.Id == id)
+            .Select(d => new DeviceResponse(
+                d.Id,
+                d.Name,
+                d.Brand,
+                d.State,
+                d.CreatedAt))
+            .FirstOrDefaultAsync();
     }
 }

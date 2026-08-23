@@ -27,8 +27,15 @@ public class DevicesController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
-    public IActionResult GetById(Guid id)
+    public async Task<IActionResult> GetById(Guid id)
     {
-        return Ok();
+        var device = await _deviceService.GetByIdAsync(id);
+
+        if (device is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(device);
     }
 }
