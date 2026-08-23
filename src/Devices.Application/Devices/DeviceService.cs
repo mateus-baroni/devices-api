@@ -1,16 +1,21 @@
 using Devices.Domain;
 using Devices.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Devices.Application.Devices;
 
 public class DeviceService
 {
     private readonly DevicesDbContext _dbContext;
+    private readonly ILogger<DeviceService> _logger;
 
-    public DeviceService(DevicesDbContext dbContext)
+    public DeviceService(
+        DevicesDbContext dbContext,
+        ILogger<DeviceService> logger)
     {
         _dbContext = dbContext;
+        _logger = logger;
     }
 
     public async Task<Guid> CreateAsync(CreateDeviceRequest request)
@@ -23,6 +28,12 @@ public class DeviceService
         _dbContext.Devices.Add(device);
 
         await _dbContext.SaveChangesAsync();
+
+        _logger.LogInformation(
+            "Device {DeviceId} created with brand {Brand} and state {State}",
+            device.Id,
+            device.Brand,
+            device.State);
 
         return device.Id;
     }
@@ -81,6 +92,10 @@ public class DeviceService
 
         if (device is null)
         {
+            _logger.LogWarning(
+                "Device {DeviceId} was not found for update",
+                id);
+
             return false;
         }
 
@@ -90,6 +105,10 @@ public class DeviceService
             request.State);
 
         await _dbContext.SaveChangesAsync();
+
+        _logger.LogInformation(
+            "Device {DeviceId} updated",
+            id);
 
         return true;
     }
@@ -103,6 +122,10 @@ public class DeviceService
 
         if (device is null)
         {
+            _logger.LogWarning(
+                "Device {DeviceId} was not found for update",
+                id);
+
             return false;
         }
 
@@ -112,6 +135,10 @@ public class DeviceService
             request.State ?? device.State);
 
         await _dbContext.SaveChangesAsync();
+
+        _logger.LogInformation(
+            "Device {DeviceId} updated",
+            id);
 
         return true;
     }
@@ -123,6 +150,10 @@ public class DeviceService
 
         if (device is null)
         {
+             _logger.LogWarning(
+                "Device {DeviceId} was not found for deletion",
+                id);
+
             return false;
         }
 
@@ -130,6 +161,10 @@ public class DeviceService
 
         await _dbContext.SaveChangesAsync();
 
+        _logger.LogInformation(
+            "Device {DeviceId} soft deleted",
+            id);
+            
         return true;
     }
     

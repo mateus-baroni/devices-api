@@ -18,9 +18,22 @@ public class GlobalExceptionHandler : IExceptionHandler
         Exception exception,
         CancellationToken cancellationToken)
     {
-        _logger.LogError(
-            exception,
-            "Unhandled exception occurred while processing request.");
+        
+        if (exception is DeviceUpdateConflictException or
+            DeviceDeletionConflictException)
+        {
+            _logger.LogWarning(
+                "Device operation rejected: {Message}",
+                exception.Message);
+        }
+        else
+        {
+            _logger.LogError(
+                exception,
+                "Unhandled exception while processing {HttpMethod} {Path}",
+                httpContext.Request.Method,
+                httpContext.Request.Path);
+        }
 
         var statusCode = exception switch
         {
