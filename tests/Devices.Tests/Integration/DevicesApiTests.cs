@@ -147,6 +147,23 @@ public class DevicesApiTests :
     }
 
     [Fact]
+    public async Task Put_ShouldReturnNotFound_WhenDeviceDoesNotExist()
+    {
+        var response = await _client.PutAsJsonAsync(
+            $"/api/devices/{Guid.NewGuid()}",
+            new
+            {
+                name = "iPhone",
+                brand = "Apple",
+                state = "Available"
+            });
+
+        Assert.Equal(
+            HttpStatusCode.NotFound,
+            response.StatusCode);
+    }
+
+    [Fact]
     public async Task Patch_ShouldUpdateOnlyProvidedFields()
     {
         var id = await CreateDeviceAsync(
@@ -181,6 +198,61 @@ public class DevicesApiTests :
     }
 
     [Fact]
+    public async Task Patch_ShouldReturnConflict_WhenChangingBrandOfInUseDevice()
+    {
+        var id = await CreateDeviceAsync(
+            "iPhone",
+            "Apple",
+            "InUse");
+
+        var response = await _client.PatchAsJsonAsync(
+            $"/api/devices/{id}",
+            new
+            {
+                brand = "Samsung"
+            });
+
+        Assert.Equal(
+            HttpStatusCode.Conflict,
+            response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Patch_ShouldReturnConflict_WhenChangingNameOfInUseDevice()
+    {
+        var id = await CreateDeviceAsync(
+            "iPhone",
+            "Apple",
+            "InUse");
+
+        var response = await _client.PatchAsJsonAsync(
+            $"/api/devices/{id}",
+            new
+            {
+                name = "New Name"
+            });
+
+        Assert.Equal(
+            HttpStatusCode.Conflict,
+            response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Patch_ShouldReturnNotFound_WhenDeviceDoesNotExist()
+    {
+        var response = await _client.PatchAsJsonAsync(
+            $"/api/devices/{Guid.NewGuid()}",
+            new
+            {
+                state = "Inactive"
+            });
+
+        Assert.Equal(
+            HttpStatusCode.NotFound,
+            response.StatusCode);
+    }
+
+    [Fact]
     public async Task Delete_ShouldSoftDeleteDevice()
     {
         var id = await CreateDeviceAsync(
@@ -201,6 +273,17 @@ public class DevicesApiTests :
         Assert.Equal(
             HttpStatusCode.NotFound,
             getResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task Delete_ShouldReturnNotFound_WhenDeviceDoesNotExist()
+    {
+        var response = await _client.DeleteAsync(
+            $"/api/devices/{Guid.NewGuid()}");
+
+        Assert.Equal(
+            HttpStatusCode.NotFound,
+            response.StatusCode);
     }
 
     [Fact]
