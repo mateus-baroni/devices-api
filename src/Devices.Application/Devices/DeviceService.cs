@@ -39,4 +39,16 @@ public class DeviceService
                 d.CreatedAt))
             .FirstOrDefaultAsync();
     }
+
+    public async Task<IReadOnlyList<DeviceResponse>> GetAllAsync()
+    {
+        return await _dbContext.Devices
+            .Select(d => new DeviceResponse(
+                d.Id,
+                d.Name,
+                d.Brand,
+                d.State,
+                d.CreatedAt))
+            .ToListAsync();
+    }
 }

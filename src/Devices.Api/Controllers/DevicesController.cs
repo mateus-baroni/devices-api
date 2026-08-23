@@ -38,4 +38,12 @@ public class DevicesController : ControllerBase
 
         return Ok(device);
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var devices = await _deviceService.GetAllAsync();
+
+        return Ok(devices);
+    }
 }
