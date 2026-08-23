@@ -56,24 +56,14 @@ public class DevicesController : ControllerBase
         Guid id,
         UpdateDeviceRequest request)
     {
-        try
-        {
-            var updated = await _deviceService.UpdateAsync(id, request);
+        var updated = await _deviceService.UpdateAsync(id, request);
 
-            if (!updated)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
-        }
-        catch (DeviceUpdateConflictException ex)
+        if (!updated)
         {
-            return Conflict(new
-            {
-                message = ex.Message
-            });
+            return NotFound();
         }
+
+        return NoContent();
     }
 
     [HttpPatch("{id:guid}")]
@@ -81,46 +71,26 @@ public class DevicesController : ControllerBase
         Guid id,
         PatchDeviceRequest request)
     {
-        try
-        {
-            var updated = await _deviceService.PatchAsync(id, request);
+        var updated = await _deviceService.PatchAsync(id, request);
 
-            if (!updated)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
-        }
-        catch (DeviceUpdateConflictException ex)
+        if (!updated)
         {
-            return Conflict(new
-            {
-                message = ex.Message
-            });
+            return NotFound();
         }
+
+        return NoContent();   
     }
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        try
-        {
-            var deleted = await _deviceService.DeleteAsync(id);
+        var deleted = await _deviceService.DeleteAsync(id);
 
-            if (!deleted)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
-        }
-        catch (DeviceDeletionConflictException ex)
+        if (!deleted)
         {
-            return Conflict(new
-            {
-                message = ex.Message
-            });
+            return NotFound();
         }
+
+        return NoContent();
     }
 }

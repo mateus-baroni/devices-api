@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Devices.Application.Devices;
+using Devices.Domain;
 
 namespace Devices.Tests.Integration;
 
@@ -322,6 +323,29 @@ public class DevicesApiTests :
         Assert.Equal(
             HttpStatusCode.Conflict,
             response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Put_ShouldReturnConflict_WhenUpdatingNameOfInUseDevice()
+    {
+        // Arrange
+        var deviceId = await CreateDeviceAsync(
+            "iPhone",
+            "Apple",
+            "InUse");
+
+        var request = new UpdateDeviceRequest(
+            "iPhone 16",
+            "Apple",
+            DeviceState.InUse);
+
+        // Act
+        var response = await _client.PutAsJsonAsync(
+            $"/api/devices/{deviceId}",
+            request);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
     }
 
     private sealed record CreateResponse(Guid Id);

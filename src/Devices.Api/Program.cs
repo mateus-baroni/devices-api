@@ -2,6 +2,7 @@ using Devices.Infrastructure.Persistence;
 using Devices.Application.Devices;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
+using Devices.Api.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,9 @@ builder.Services.AddControllers()
 
 //Services
 builder.Services.AddScoped<DeviceService>();
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 // Swagger / OpenAPI
 builder.Services.AddEndpointsApiExplorer();
@@ -30,6 +34,8 @@ builder.Services.AddHealthChecks()
     .AddDbContextCheck<DevicesDbContext>();
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 using (var scope = app.Services.CreateScope())
 {
