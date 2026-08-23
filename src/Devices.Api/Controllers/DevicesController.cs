@@ -75,4 +75,29 @@ public class DevicesController : ControllerBase
             });
         }
     }
+
+    [HttpPatch("{id:guid}")]
+    public async Task<IActionResult> Patch(
+        Guid id,
+        PatchDeviceRequest request)
+    {
+        try
+        {
+            var updated = await _deviceService.PatchAsync(id, request);
+
+            if (!updated)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+        catch (DeviceUpdateConflictException ex)
+        {
+            return Conflict(new
+            {
+                message = ex.Message
+            });
+        }
+    }
 }

@@ -89,5 +89,27 @@ public class DeviceService
 
         return true;
     }
+
+    public async Task<bool> PatchAsync(
+        Guid id,
+        PatchDeviceRequest request)
+    {
+        var device = await _dbContext.Devices
+            .FirstOrDefaultAsync(d => d.Id == id);
+
+        if (device is null)
+        {
+            return false;
+        }
+
+        device.UpdateDetails(
+            request.Name ?? device.Name,
+            request.Brand ?? device.Brand,
+            request.State ?? device.State);
+
+        await _dbContext.SaveChangesAsync();
+
+        return true;
+    }
     
 }
