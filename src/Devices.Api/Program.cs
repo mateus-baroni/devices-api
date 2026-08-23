@@ -26,7 +26,18 @@ builder.Services.AddDbContext<DevicesDbContext>(options =>
         builder.Configuration.GetConnectionString("DevicesDb"));
 });
 
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<DevicesDbContext>();
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider
+        .GetRequiredService<DevicesDbContext>();
+
+    dbContext.Database.Migrate();
+}
 
 // Swagger UI
 if (app.Environment.IsDevelopment())
@@ -38,6 +49,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();
 
