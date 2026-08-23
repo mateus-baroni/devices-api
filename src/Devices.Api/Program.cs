@@ -1,10 +1,20 @@
 using Devices.Infrastructure.Persistence;
+using Devices.Application.Devices;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Controllers
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter());
+    });
+
+//Services
+builder.Services.AddScoped<DeviceService>();
 
 // Swagger / OpenAPI
 builder.Services.AddEndpointsApiExplorer();

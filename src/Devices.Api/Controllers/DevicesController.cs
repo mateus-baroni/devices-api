@@ -1,14 +1,34 @@
+using Devices.Application.Devices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Devices.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/devices")]
 public class DevicesController : ControllerBase
 {
-    [HttpGet]
-    public IActionResult Get()
+    private readonly DeviceService _deviceService;
+
+    public DevicesController(DeviceService deviceService)
     {
-        return Ok("Devices API is running");
+        _deviceService = deviceService;
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(
+        CreateDeviceRequest request)
+    {
+        var id = await _deviceService.CreateAsync(request);
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id },
+            new { id });
+    }
+
+    [HttpGet("{id:guid}")]
+    public IActionResult GetById(Guid id)
+    {
+        return Ok();
     }
 }
