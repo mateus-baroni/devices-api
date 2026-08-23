@@ -16,7 +16,11 @@ public class Device
         Name = name;
         Brand = brand;
         State = state;
-        CreatedAt = DateTime.UtcNow;
+        
+        var now = DateTime.UtcNow;
+
+        CreatedAt = now;
+        UpdatedAt = now;
     }
 
     public Guid Id { get; private set; }
@@ -28,4 +32,6 @@ public class Device
     public DeviceState State { get; private set; }
 
     public DateTime CreatedAt { get; private set; }
+    
+    public DateTime UpdatedAt { get; private set; }
 }

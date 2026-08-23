@@ -27,6 +27,9 @@ public class DeviceConfiguration : IEntityTypeConfiguration<Device>
         builder.Property(x => x.CreatedAt)
             .IsRequired();
 
+        builder.Property(x => x.UpdatedAt)
+            .IsRequired();
+
         builder.HasIndex(x => x.Brand);
 
         builder.HasIndex(x => x.State);
