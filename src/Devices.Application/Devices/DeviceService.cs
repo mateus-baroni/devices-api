@@ -30,7 +30,7 @@ public class DeviceService
     public async Task<DeviceResponse?> GetByIdAsync(Guid id)
     {
         return await _dbContext.Devices
-            .Where(d => d.Id == id)
+            .Where(d => d.Id == id && d.DeletedAt == null)
             .Select(d => new DeviceResponse(
                 d.Id,
                 d.Name,
@@ -45,7 +45,9 @@ public class DeviceService
         string? brand,
         DeviceState? state)
     {
-        var query = _dbContext.Devices.AsQueryable();
+        var query = _dbContext.Devices
+            .Where(d => d.DeletedAt == null)
+            .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(brand))
         {
@@ -73,7 +75,7 @@ public class DeviceService
         UpdateDeviceRequest request)
     {
         var device = await _dbContext.Devices
-            .FirstOrDefaultAsync(d => d.Id == id);
+            .FirstOrDefaultAsync(d => d.Id == id && d.DeletedAt == null);
 
         if (device is null)
         {
@@ -95,7 +97,7 @@ public class DeviceService
         PatchDeviceRequest request)
     {
         var device = await _dbContext.Devices
-            .FirstOrDefaultAsync(d => d.Id == id);
+            .FirstOrDefaultAsync(d => d.Id == id && d.DeletedAt == null);
 
         if (device is null)
         {
@@ -106,6 +108,23 @@ public class DeviceService
             request.Name ?? device.Name,
             request.Brand ?? device.Brand,
             request.State ?? device.State);
+
+        await _dbContext.SaveChangesAsync();
+
+        return true;
+    }
+
+    public async Task<bool> DeleteAsync(Guid id)
+    {
+        var device = await _dbContext.Devices
+            .FirstOrDefaultAsync(d => d.Id == id && d.DeletedAt == null);
+
+        if (device is null)
+        {
+            return false;
+        }
+
+        device.Delete();
 
         await _dbContext.SaveChangesAsync();
 

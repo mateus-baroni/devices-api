@@ -30,6 +30,8 @@ public class DeviceConfiguration : IEntityTypeConfiguration<Device>
         builder.Property(x => x.UpdatedAt)
             .IsRequired();
 
+        builder.Property(x => x.DeletedAt);
+
         builder.HasIndex(x => x.Brand);
 
         builder.HasIndex(x => x.State);

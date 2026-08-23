@@ -37,6 +37,8 @@ public class Device
 
     public DateTime UpdatedAt { get; private set; }
 
+    public DateTime? DeletedAt { get; private set; }
+
     public void UpdateDetails(
         string name,
         string brand,
@@ -63,5 +65,16 @@ public class Device
         Brand = brand;
         State = state;
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void Delete()
+    {
+        if (State == DeviceState.InUse)
+        {
+            throw new DeviceDeletionConflictException(
+                "In-use devices cannot be deleted.");
+        }
+
+        DeletedAt = DateTime.UtcNow;
     }
 }
